@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 import useCartStore from '../stores/cartStore';
+import ProductList from './components/ProductList';
 
 const Home = () => {
     const [products, setProducts] = useState<{ id: string; name: string; price: number }[]>([]);
@@ -26,38 +27,9 @@ const Home = () => {
         addItem(product);  // Adds product to the cart
     };
 
-    const handleRemoveFromCart = (id: string) => {
-        removeItem(id);  // Removes product from the cart
-    };
-
     return (
         <div>
-            <h1>All Products : {products.length}</h1>
-            <ul>
-                {products.map((product) => (
-                    <li key={product.id}>
-                        {product.name} - ${product.price}
-                        <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
-                    </li>
-                ))}
-            </ul>
-
-            <h1>CART:</h1>
-            {items.length === 0 ? (
-                <p>Your cart is empty.</p>
-            ) : (
-                <div>
-                    <ul>
-                        {items.map((item) => (
-                            <li key={item.id}>
-                                {item.name} - ${item.price} x {item.quantity}
-                                <button onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
-                            </li>
-                        ))}
-                    </ul>
-                    <h3>Total: ${items.reduce((total, item) => total + item.price * item.quantity, 0)}</h3>
-                </div>
-            )}
+            
         </div>
     );
 };

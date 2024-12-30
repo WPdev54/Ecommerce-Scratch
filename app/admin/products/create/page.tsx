@@ -1,21 +1,39 @@
-// app/admin/products/create/page.tsx
-
 'use client'; // This is a client-side component
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const CreateProductPage = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
+    const [categoryId, setCategoryId] = useState('');
     const [message, setMessage] = useState('');
+    const [categories, setCategories] = useState<any[]>([]);
+
+    useEffect(() => {
+        // Fetch all categories when the component mounts
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                if (res.ok) {
+                    const data = await res.json();
+                    setCategories(data);
+                } else {
+                    setMessage('Error fetching categories.');
+                }
+            } catch (error) {
+                setMessage('Error fetching categories.');
+            }
+        };
+        fetchCategories();
+    }, []);
 
     // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Validate the form fields
-        if (!name || !description || !price) {
+        if (!name || !description || !price || !categoryId) {
             setMessage('All fields are required!');
             return;
         }
@@ -27,7 +45,12 @@ const CreateProductPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name, description, price: parseFloat(price) }), // Convert price to float
+                body: JSON.stringify({
+                    name,
+                    description,
+                    price: parseFloat(price), // Convert price to float
+                    categoryId,
+                }),
             });
 
             if (!response.ok) {
@@ -41,6 +64,7 @@ const CreateProductPage = () => {
             setName('');
             setDescription('');
             setPrice('');
+            setCategoryId('');
         } catch (error) {
             setMessage('Error creating product. Please try again.');
         }
@@ -81,6 +105,23 @@ const CreateProductPage = () => {
                         required
                         step="0.01"
                     />
+                </div>
+
+                <div>
+                    <label htmlFor="category">Category</label>
+                    <select
+                        id="category"
+                        value={categoryId}
+                        onChange={(e) => setCategoryId(e.target.value)}
+                        required
+                    >
+                        <option value="">Select Category</option>
+                        {categories?.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <button type="submit">Create Product</button>
